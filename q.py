@@ -240,6 +240,11 @@ class Q(object):
             return None
         for node in self.ast.walk(tree):
             if isinstance(node, self.ast.Call):
+                if isinstance(node.func, self.ast.Name):
+                    start_pos = node.args[0].col_offset
+                    end_pos = node.args[-1].end_col_offset
+                    segment = line[start_pos:end_pos]
+                    return [segment]
                 offsets = []
                 for arg in node.args:
                     # In Python 3.4 the col_offset is calculated wrong. See
@@ -258,7 +263,7 @@ class Q(object):
                 args = []
                 for i in range(len(node.args)):
                     args.append(line[offsets[i]:offsets[i + 1]].rstrip(', '))
-                return args
+                # return args
 
     def show(self, func_name, values, labels=None):
         """Prints out nice representations of the given values."""
